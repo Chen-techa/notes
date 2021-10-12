@@ -159,49 +159,287 @@
 - webp格式的图片在Android上是内置支持的。iOS上不同平台不一样，具体如下：app-vue下，iOS不支持；app-nvue下，iOS支持；微信小程序2.9.0起，iOS支持。
 - svg 格式的图片在不同的平台支持情况不同。具体为：app-nvue 不支持 svg 格式的图片，小程序上只支持网络地址。
 
-### uni-app中使用scss和字体图标
+### uni-app中的样式
 
+- rpx即响应式px，一种根据屏幕宽度自适应的动态单位。以宽750的屏幕为基准，750rpx恰好为屏幕宽度，屏幕宽度增大，rpx实际显示效果会等比放大
 
+- 使用`@import`语句可以进行外联样式表的导入，`@import`后跟需要导入的外联样式表的相对路径，用；便是语句结束
 
-### 数据的基本绑定
+- 支持最常用的选择器class、element、id
 
+- 在`uni-app`中不能使用`*`选择器
 
+- 定义在App.vue中的样式为全局样式，作用域每一个页面。pages目录下的vue文件定义为局部样式文件，之作用在对应的页面，并会覆盖App.vue中相同的选择器
 
-### v-bind和v-for
+- uni-app支持使用字体图标，使用方式与普通的web项目相同，需要注意：
 
+  - 字体文件小于40KB，uni-app会自动将其转化为base64格式
+  - 字体文件大于40KB，需要开发者自己转换，否则不会生效
+  - 字体文件的引用以`-@`开头的绝对路径
 
-
-### 注册事件和传递参数以及获取到的事件队象
-
-
+  ```
+  @font-face{
+  font-family：test；
+  src：url（‘-@/xx/学习.ttf’）；
+  }
+  ```
 
 ### 生命周期
 
-
-
-### 下拉刷新和上拉加载
-
-
-
-### 发送get请求
-
-
+| 生命周期钩子  | 描述                                                         | H5   | App端 | 微信小程序 | 说明 |
+| ------------- | ------------------------------------------------------------ | ---- | ----- | ---------- | ---- |
+| beforeCreate  | 在实例初始化之后被调用 [详情](https://cn.vuejs.org/v2/api/#beforeCreate) | √    | √     | √          |      |
+| created       | 在实例创建完成后被立即调用 [详情](https://cn.vuejs.org/v2/api/#created) | √    | √     | √          |      |
+| beforeMount   | 在挂载开始之前被调用 [详情](https://cn.vuejs.org/v2/api/#beforeMount) | √    | √     | √          |      |
+| mounted       | 挂载到实例上去之后调用 [详情](https://cn.vuejs.org/v2/api/#mounted) 注意：此处并不能确定子组件被全部挂载，如果需要子组件完全挂载之后在执行操作可以使用$nextTick [详情](https://cn.vuejs.org/v2/api/#Vue-nextTick) | √    | √     | √          |      |
+| beforeUpdate  | 数据更新时调用，发生在虚拟 DOM 打补丁之前 [详情](https://cn.vuejs.org/v2/api/#beforeUpdate) | √    | √     | √          |      |
+| updated       | 由于数据更改导致的虚拟 DOM 重新渲染和打补丁，在这之后会调用该钩子 [详情](https://cn.vuejs.org/v2/api/#updated) | √    | √     | √          |      |
+| activated     | 被 keep-alive 缓存的组件激活时调用 [详情](https://cn.vuejs.org/v2/api/#activated) | √    | √     | x          |      |
+| deactivated   | 被 keep-alive 缓存的组件停用时调用 [详情](https://cn.vuejs.org/v2/api/#deactivated) | √    | √     | x          |      |
+| beforeDestroy | 实例销毁之前调用。在这一步，实例仍然完全可用 [详情](https://cn.vuejs.org/v2/api/#beforeDestroy) | √    | √     | √          |      |
+| destroyed     | Vue 实例销毁后调用。调用后，Vue 实例指示的所有东西都会解绑定，所有的事件监听器会被移除，所有的子实例也会被销毁 [详情](https://cn.vuejs.org/v2/api/#destroyed) | √    | √     | √          |      |
+| errorCaptured | 当捕获一个来自子孙组件的错误时被调用 [详情](https://cn.vuejs.org/v2/api/#errorCaptured) | √    | √     | √          | -    |
 
 ### 数据缓存
 
+#### uni.setStorage(OBJECT)
 
+将数据存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个异步接口。
 
-### 图片的上传和预览
+**OBJECT 参数说明**
 
+| 参数名   | 类型     | 必填 | 说明                                                         |
+| :------- | :------- | :--- | :----------------------------------------------------------- |
+| key      | String   | 是   | 本地缓存中的指定的 key                                       |
+| data     | Any      | 是   | 需要存储的内容，只支持原生类型、及能够通过 JSON.stringify 序列化的对象 |
+| success  | Function | 否   | 接口调用成功的回调函数                                       |
+| fail     | Function | 否   | 接口调用失败的回调函数                                       |
+| complete | Function | 否   | 接口调用结束的回调函数（调用成功、失败都会执行）             |
 
+**示例**
 
-### 条件编译跨端兼容
+```javascript
+uni.setStorage({
+    key: 'storage_key',
+    data: 'hello',
+    success: function () {
+        console.log('success');
+    }
+});
+```
 
+#### uni.setStorageSync(KEY,DATA)
 
+将 data 存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个同步接口。
 
-### 两种方式导航跳转和传参
+**参数说明**
 
+| 参数 | 类型   | 必填 | 说明                                                         |
+| :--- | :----- | :--- | :----------------------------------------------------------- |
+| key  | String | 是   | 本地缓存中的指定的 key                                       |
+| data | Any    | 是   | 需要存储的内容，只支持原生类型、及能够通过 JSON.stringify 序列化的对象 |
 
+```javascript
+try {
+    uni.setStorageSync('storage_key', 'hello');
+} catch (e) {
+    // error
+}
+```
+
+#### uni.getStorage(OBJECT)
+
+从本地缓存中异步获取指定 key 对应的内容。
+
+**OBJECT 参数说明**
+
+| 参数名   | 类型     | 必填 | 说明                                             |
+| :------- | :------- | :--- | :----------------------------------------------- |
+| key      | String   | 是   | 本地缓存中的指定的 key                           |
+| success  | Function | 是   | 接口调用的回调函数，res = {data: key对应的内容}  |
+| fail     | Function | 否   | 接口调用失败的回调函数                           |
+| complete | Function | 否   | 接口调用结束的回调函数（调用成功、失败都会执行） |
+
+**success 返回参数说明**
+
+| 参数 | 类型 | 说明           |
+| :--- | :--- | :------------- |
+| data | Any  | key 对应的内容 |
+
+**示例**
+
+```javascript
+uni.getStorage({
+    key: 'storage_key',
+    success: function (res) {
+        console.log(res.data);
+    }
+});
+```
+
+#### uni.getStorageSync(KEY)
+
+从本地缓存中同步获取指定 key 对应的内容。
+
+**参数说明**
+
+| 参数 | 类型   | 必填 | 说明                   |
+| :--- | :----- | :--- | :--------------------- |
+| key  | String | 是   | 本地缓存中的指定的 key |
+
+**示例**
+
+```javascript
+try {
+    const value = uni.getStorageSync('storage_key');
+    if (value) {
+        console.log(value);
+    }
+} catch (e) {
+    // error
+}
+```
+
+#### uni.getStorageInfo(OBJECT)
+
+异步获取当前 storage 的相关信息。
+
+**平台差异说明**
+
+|       App        |  H5  | 微信小程序 | 支付宝小程序 | 百度小程序 |
+| :--------------: | :--: | :--------: | :----------: | :--------: |
+| HBuilderX 2.0.3+ |  √   |     √      |      √       |     √      |
+
+**OBJECT 参数说明**
+
+| 参数名   | 类型     | 必填 | 说明                                             |
+| :------- | :------- | :--- | :----------------------------------------------- |
+| success  | Function | 是   | 接口调用的回调函数，详见返回参数说明             |
+| fail     | Function | 否   | 接口调用失败的回调函数                           |
+| complete | Function | 否   | 接口调用结束的回调函数（调用成功、失败都会执行） |
+
+**success 返回参数说明**
+
+| 参数        | 类型            | 说明                         |
+| :---------- | :-------------- | :--------------------------- |
+| keys        | Array＜String＞ | 当前 storage 中所有的 key    |
+| currentSize | Number          | 当前占用的空间大小, 单位：kb |
+| limitSize   | Number          | 限制的空间大小, 单位：kb     |
+
+**示例**
+
+```javascript
+uni.getStorageInfo({
+    success: function (res) {
+        console.log(res.keys);
+        console.log(res.currentSize);
+        console.log(res.limitSize);
+    }
+});
+```
+
+uni.getStorageInfoSync()
+
+同步获取当前 storage 的相关信息。
+
+**平台差异说明**
+
+|       App        |  H5  | 微信小程序 | 支付宝小程序 | 百度小程序 |
+| :--------------: | :--: | :--------: | :----------: | :--------: |
+| HBuilderX 2.0.3+ |  √   |     √      |      √       |     √      |
+
+**示例**
+
+```javascript
+try {
+    const res = uni.getStorageInfoSync();
+    console.log(res.keys);
+    console.log(res.currentSize);
+    console.log(res.limitSize);
+} catch (e) {
+    // error
+}
+```
+
+#### uni.removeStorage(OBJECT)
+
+从本地缓存中异步移除指定 key。
+
+**OBJECT 参数说明**
+
+| 参数名   | 类型     | 必填 | 说明                                             |
+| :------- | :------- | :--- | :----------------------------------------------- |
+| key      | String   | 是   | 本地缓存中的指定的 key                           |
+| success  | Function | 是   | 接口调用的回调函数                               |
+| fail     | Function | 否   | 接口调用失败的回调函数                           |
+| complete | Function | 否   | 接口调用结束的回调函数（调用成功、失败都会执行） |
+
+**示例**
+
+```javascript
+uni.removeStorage({
+    key: 'storage_key',
+    success: function (res) {
+        console.log('success');
+    }
+});
+```
+
+#### uni.removeStorageSync(KEY)
+
+从本地缓存中同步移除指定 key。
+
+**参数说明**
+
+| 参数名 | 类型   | 必填 | 说明                   |
+| :----- | :----- | :--- | :--------------------- |
+| key    | String | 是   | 本地缓存中的指定的 key |
+
+**示例**
+
+```javascript
+try {
+    uni.removeStorageSync('storage_key');
+} catch (e) {
+    // error
+}
+```
+
+#### uni.clearStorage()
+
+清理本地数据缓存。
+
+**示例**
+
+```javascript
+uni.clearStorage();
+```
+
+#### uni.clearStorageSync()
+
+同步清理本地数据缓存。
+
+**示例**
+
+```javascript
+try {
+    uni.clearStorageSync();
+} catch (e) {
+    // error
+}
+```
+
+**注意**
+
+uni-app的Storage在不同端的实现不同：
+
+- H5端为localStorage，浏览器限制5M大小，是缓存概念，可能会被清理
+- App端为原生的plus.storage，无大小限制，不是缓存，是持久化的
+- 各个小程序端为其自带的storage api，数据存储生命周期跟小程序本身一致，即除用户主动删除或超过一定时间被自动清理，否则数据都一直可用。
+- 微信小程序单个 key 允许存储的最大数据长度为 1MB，所有数据存储上限为 10MB。
+- 支付宝小程序单条数据转换成字符串后，字符串长度最大200*1024。同一个支付宝用户，同一个小程序缓存总上限为10MB。
+- 百度、字节跳动小程序文档未说明大小限制
+- 非App平台清空Storage会导致uni.getSystemInfo获取到的deviceId改变
 
 ### 组件的创建使用和组件的生命周期
 
@@ -218,3 +456,4 @@
 
 
 ## uni-app项目部分
+
